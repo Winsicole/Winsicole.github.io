@@ -1,340 +1,252 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Quantum Galaxy</title>
-  <style>
-    html,body{height:100%;margin:0;background:#000;overflow:hidden}
-    #overlay{position:fixed;left:12px;top:12px;color:#ddd;font-family:Inter,Arial,Helvetica,sans-serif;font-size:13px;z-index:10}
-    a{color:#9cf}
-  </style>
-    <script type="importmap">
-    {
-      "imports": {
-        "three": "https://unpkg.com/three@0.152.0/build/three.module.js",
-        "three/": "https://unpkg.com/three@0.152.0/",
-        "three/addons/": "https://unpkg.com/three@0.152.0/examples/jsm/"
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Winsicole</title>
+    <style>
+      :root {
+        --bg: #030303;
+        --text: #ffffff;
+        --soft: rgba(255, 255, 255, 0.88);
       }
-    }
-    </script>
-</head>
-<body>
-<div id="overlay">Quantum Galaxy — drag to orbit, scroll to zoom. Press R to reset camera.</div>
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
-// Renderer
-const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-document.body.appendChild(renderer.domElement);
+      * { box-sizing: border-box; }
 
-// Scene & Camera
-const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x000000, 0.0006);
-const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 10000);
-camera.position.set(0, 400, 800);
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+      }
 
-// Controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.08;
-controls.minDistance = 10;
-controls.maxDistance = 4000;
+      body {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at center, rgba(255,255,255,0.06), transparent 36%),
+          #030303;
+      }
 
-// Postprocessing: Bloom
-const renderScene = new RenderPass(scene, camera);
-const composer = new EffectComposer(renderer);
-composer.addPass(renderScene);
-const _bloomSize = renderer.getSize(new THREE.Vector2());
-const bloom = new UnrealBloomPass(_bloomSize, 2.0, 1.0, 0.1);
-// cinematic bloom settings
-bloom.threshold = 0.1;
-bloom.strength = 2.0;
-bloom.radius = 1.1;
-composer.addPass(bloom);
+      .hero {
+        width: min(1000px, 92vw);
+        padding: 0 4vw;
+        position: relative;
+        display: block;
+      }
 
-// Hyperspace controls (Spacebar): speedMultiplier and bloom targets
-let speedMultiplier = 1.0;
-let speedTarget = 1.0;
+      .content {
+        position: relative;
+        z-index: 1;
+        max-width: 900px;
+      }
 
-let baseBloomStrength = bloom.strength || 1.2;
-let bloomTarget = baseBloomStrength;
+      h1 {
+        margin: 0;
+        font-size: clamp(2.8rem, 7vw, 6.2rem);
+        line-height: 0.94;
+        letter-spacing: -0.03em;
+        font-weight: 800;
+        color: #ffffff;
+        text-shadow: 0 0 14px rgba(255,255,255,0.12);
+      }
+
+      .desc {
+        margin: 0;
+        color: var(--text);
+        font-size: 1.05rem;
+        max-width: 62ch;
+        line-height: 1.8;
+        letter-spacing: 0.01em;
+        outline: none;
+      }
+
+      .stack {
+        margin-top: 2.2rem;
+      }
+
+      .stack p + p {
+        margin-top: 0.45rem;
+      }
+
+      .muted {
+        color: rgba(255, 255, 255, 0.95);
+        font-weight: 700;
+      }
+
+      .skills {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+        gap: 1.2rem 2.5rem;
+        margin-top: 1.1rem;
+        max-width: 560px;
+      }
+
+      .skill-group {
+        min-width: 0;
+      }
+
+      .skill-title {
+        margin: 0 0 0.7rem;
+        font-size: 0.82rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.82);
+      }
+
+      .skill-list {
+        margin: 0;
+        padding-left: 1.2rem;
+        color: var(--text);
+        line-height: 1.9;
+        font-size: 1rem;
+      }
+
+      .skill-list li {
+        margin: 0;
+      }
+
+      .info-block {
+        margin-top: 1.4rem;
+      }
+
+      .info-label {
+        margin: 0 0 0.35rem;
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.8);
+      }
+
+      .info-text {
+        margin: 0;
+        color: var(--text);
+        line-height: 1.7;
+        max-width: 66ch;
+      }
+
+      .projects {
+        margin-top: 2.2rem;
+        max-width: 760px;
+      }
+
+      .project {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+        padding: 0.6rem 0;
+        background: transparent;
+        border: none;
+      }
+
+      .project + .project {
+        border-top: 1px solid rgba(255,255,255,0.04);
+        margin-top: 0.9rem;
+        padding-top: 1rem;
+      }
+
+      .project-media {
+        width: 180px;
+        height: 130px;
+        flex-shrink: 0;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 6px;
+      }
+
+      .project-media img { width: 100%; height: 100%; object-fit: cover; display: block; filter: none; }
+
+      .project-body { flex: 1; }
 
 
-// Galaxy parameters
-const PARTICLE_COUNT = 100000;
-const ARMS = 4;
-const thetaMax = Math.PI * 4.5; // how far arms sweep
-const a = 8.0; // spiral scale
-const k = 0.25; // spiral growth rate
-const positions = new Float32Array(PARTICLE_COUNT * 3);
-const aRadius = new Float32Array(PARTICLE_COUNT);
-const aBaseAngle = new Float32Array(PARTICLE_COUNT);
-const aArmOffset = new Float32Array(PARTICLE_COUNT);
-const aSpeed = new Float32Array(PARTICLE_COUNT);
-const aZ = new Float32Array(PARTICLE_COUNT);
+      .project-title { margin: 0 0 0.35rem; font-size: 1rem; color: #ffffff; display: flex; align-items: center; gap: 0.6rem; }
 
-function randGaussian() { // Box-Muller
-  let u = 0, v = 0;
-  while(u === 0) u = Math.random();
-  while(v === 0) v = Math.random();
-  return Math.sqrt(-2.0*Math.log(u))*Math.cos(2*Math.PI*v);
-}
+      .project-title a { color: inherit; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: var(--soft); }
 
-let idx = 0;
-for(let arm=0; arm<ARMS; arm++){
-  for(let i=0; i < PARTICLE_COUNT/ARMS; i++){
-    const t = Math.random() * thetaMax;
-    // Logarithmic spiral: r = a * exp(k * theta)
-    let r = a * Math.exp(k * t);
-    // add jitter and clamp
-    r += randGaussian() * (r * 0.05 + 2.0);
-    r = Math.min(r, 1600);
+      .project-cta { color: var(--soft); font-size: 0.86rem; opacity: 0.9; display: inline-flex; align-items: center; gap: 0.35rem; }
 
-    const baseAngle = t;
-    const armOffset = (arm * (Math.PI * 2) / ARMS) + (Math.random() - 0.5) * 0.4;
-    const z = randGaussian() * (Math.min(1.5, r * 0.002 + 0.2)); // thin disk
-    // differential rotation: inner moves faster
-    const speed = 0.35 / Math.sqrt(r + 1.0);
+      .project-cta .arrow { font-size: 0.95rem; transform: translateY(-1px); }
 
-    const x = r * Math.cos(baseAngle + armOffset);
-    const y = r * Math.sin(baseAngle + armOffset);
+      .project-desc { margin: 0; color: var(--soft); font-style: normal; font-weight: 400; }
 
-    positions[idx*3+0] = x;
-    positions[idx*3+1] = y;
-    positions[idx*3+2] = z;
-    aRadius[idx] = r;
-    aBaseAngle[idx] = baseAngle;
-    aArmOffset[idx] = armOffset;
-    aSpeed[idx] = speed * (0.6 + Math.random() * 0.8);
-    aZ[idx] = z;
-    idx++;
-  }
-}
+      @media (max-width: 640px) {
+        .desc { font-size: 0.98rem; }
+        .skills { grid-template-columns: 1fr; gap: 1rem; }
+        .project { flex-direction: column; }
+        .project-media { width: 100%; height: 200px; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="hero">
+      <div class="content">
+        <h1>Hey, I'm Winsicole</h1>
 
-const geometry = new THREE.BufferGeometry();
-geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-geometry.setAttribute('aRadius', new THREE.BufferAttribute(aRadius, 1));
-geometry.setAttribute('aBaseAngle', new THREE.BufferAttribute(aBaseAngle, 1));
-geometry.setAttribute('aArmOffset', new THREE.BufferAttribute(aArmOffset, 1));
-geometry.setAttribute('aSpeed', new THREE.BufferAttribute(aSpeed, 1));
-geometry.setAttribute('aZ', new THREE.BufferAttribute(aZ, 1));
+        <div class="stack">
+          <p class="desc"><span class="muted">Luau and Python developer.</span></p>
+          <p class="desc">Two months of Luau experience and six months of Python experience.</p>
+          <p class="desc">What I can do:</p>
 
-// Custom shader for particles
-const particleVertex = `
-  uniform float uTime;
-  attribute float aRadius;
-  attribute float aBaseAngle;
-  attribute float aArmOffset;
-  attribute float aSpeed;
-  attribute float aZ;
-  varying float vRadius;
-  varying vec3 vColor;
-  void main(){
-    // keep base angular placement; global rotation of the Points keeps spiral shape
-    float angle = aBaseAngle;
-    vec3 pos = vec3(aRadius * cos(angle + aArmOffset), aRadius * sin(angle + aArmOffset), aZ);
-    vRadius = aRadius;
-      float m = smoothstep(0.0, 900.0, aRadius);
-      vec3 inner = vec3(1.0, 0.7, 0.3);
-      vec3 outer = vec3(0.4, 0.2, 1.0);
-      vColor = mix(inner, outer, m);
-      float t = m;
-      vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
-      gl_Position = projectionMatrix * mvPos;
-      // outer stars slightly smaller to add depth
-      float size = (1.0 + (1.0 - t) * 3.0) * (140.0 / -mvPos.z);
-      gl_PointSize = clamp(size, 0.8, 120.0);
-  }
-`;
+          <div class="skills">
+            <div class="skill-group">
+              <h2 class="skill-title">Luau</h2>
+              <ul class="skill-list">
+                <li>Game systems</li>
+                <li>UI systems</li>
+                <li>Other game mechanics</li>
+              </ul>
+            </div>
 
-const particleFragment = `
-  varying vec3 vColor;
-  varying float vRadius;
-  void main(){
-    vec2 uv = gl_PointCoord - vec2(0.5);
-    float d = length(uv);
-    float alpha = smoothstep(0.5, 0.0, d);
-    // soft corona
-    float halo = smoothstep(0.9, 0.3, d);
-    // rim/pull effect for stars near center
-    float rim = clamp((80.0 - vRadius) / 80.0, 0.0, 1.0);
-    vec3 rimColor = vec3(0.9, 0.7, 0.5) * rim * (1.0 - d);
-    vec3 col = vColor + vec3(halo*0.6) + rimColor;
-    gl_FragColor = vec4(col, alpha);
-  }
-`;
+            <div class="skill-group">
+              <h2 class="skill-title">Python</h2>
+              <ul class="skill-list">
+                <li>Discord bot development</li>
+              </ul>
+            </div>
+          </div>
 
-const particleUniforms = { uTime: { value: 0 } };
+          <div class="info-block">
+            <p class="info-label">Notes</p>
+            <p class="info-text">I don't host Discord bots at the moment, but that may change in the future.</p>
+          </div>
 
-const particleMaterial = new THREE.ShaderMaterial({
-  uniforms: particleUniforms,
-  vertexShader: particleVertex,
-  fragmentShader: particleFragment,
-  transparent: true,
-  depthWrite: false,
-  blending: THREE.AdditiveBlending,
-});
+          <div class="info-block">
+            <p class="info-label">Pricing</p>
+            <p class="info-text">There is no fixed price for services, as it depends entirely on what you want built.</p>
+          </div>
 
-const points = new THREE.Points(geometry, particleMaterial);
-// group core objects together for whole-galaxy transforms
-const galaxyGroup = new THREE.Group();
-galaxyGroup.rotation.x = 0.6; // tilt on its side
-galaxyGroup.add(points);
-scene.add(galaxyGroup);
+          <div class="projects">
+            <div class="project">
+              <div class="project-body">
+                <h3 class="project-title">
+                  <a href="https://www.roblox.com/games/92010865361878/Winsicoles" target="_blank" rel="noopener noreferrer">Winsicole's (Roblox)</a>
+                  <span class="project-cta"><span class="arrow">←</span><span class="cta-text">click me :)</span></span>
+                </h3>
+                <p class="project-desc">Roblox experience to show basic systems.</p>
+              </div>
+            </div>
 
-// Star dust: a secondary points system for volumetric depth (3,000 particles)
-function makeSpriteTexture(){
-  const size = 64;
-  const canvas = document.createElement('canvas');
-  canvas.width = size; canvas.height = size;
-  const ctx = canvas.getContext('2d');
-  const grd = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
-  grd.addColorStop(0, 'rgba(180,180,180,1)');
-  grd.addColorStop(0.4, 'rgba(150,150,150,0.4)');
-  grd.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = grd; ctx.fillRect(0,0,size,size);
-  const tex = new THREE.CanvasTexture(canvas);
-  tex.encoding = THREE.sRGBEncoding;
-  tex.needsUpdate = true;
-  return tex;
-}
-
-const DUST_COUNT = 5000;
-const dustPositions = new Float32Array(DUST_COUNT * 3);
-const dustVel = new Float32Array(DUST_COUNT);
-for(let i=0;i<DUST_COUNT;i++){
-  // scatter dust broadly around camera for massive parallax
-  dustPositions[i*3+0] = camera.position.x + (Math.random()-0.5)*4000;
-  dustPositions[i*3+1] = camera.position.y + (Math.random()-0.5)*4000;
-  dustPositions[i*3+2] = camera.position.z + (Math.random()-0.5)*4000;
-  dustVel[i] = 0.02; // slow drift speed toward camera
-}
-const dustGeom = new THREE.BufferGeometry();
-dustGeom.setAttribute('position', new THREE.BufferAttribute(dustPositions, 3));
-const dustMat = new THREE.PointsMaterial({ size: 3, map: makeSpriteTexture(), transparent: true, opacity: 0.3, depthWrite: false, blending: THREE.NormalBlending });
-const starDust = new THREE.Points(dustGeom, dustMat);
-scene.add(starDust);
-
-// Nebula: large inverted sphere as subtle background
-const nebulaGeom = new THREE.SphereGeometry(5000, 32, 32);
-const nebulaMat = new THREE.MeshBasicMaterial({ color: 0x0b0836, transparent: true, opacity: 0.1, side: THREE.BackSide });
-const nebula = new THREE.Mesh(nebulaGeom, nebulaMat);
-scene.add(nebula);
-
-// center point light with zero intensity (visual placeholder for 'void')
-const centerLight = new THREE.PointLight(0xffffff, 0, 2000);
-centerLight.position.set(0,0,0);
-scene.add(centerLight);
-
-// Black hole (dark sphere) at center — enlarged event horizon
-const bhGeom = new THREE.SphereGeometry(40, 64, 32);
-const bhMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
-const blackHole = new THREE.Mesh(bhGeom, bhMat);
-blackHole.layers.enable(0);
-blackHole.renderOrder = 10;
-galaxyGroup.add(blackHole);
-
-// Accretion disk: replace shader torus with MeshStandardMaterial torus for realistic shading
-const torusGeom = new THREE.TorusGeometry(70, 2, 16, 100);
-const torusMat = new THREE.MeshStandardMaterial({ color: 0x220000, emissive: 0xff4400, emissiveIntensity: 2.0, metalness: 0.1, roughness: 0.6 });
-const accretion = new THREE.Mesh(torusGeom, torusMat);
-accretion.rotation.x = Math.PI * 0.45;
-accretion.rotation.y = 0.2;
-accretion.renderOrder = 9;
-galaxyGroup.add(accretion);
-
-// Photon sphere: a glowing rim around the event horizon using simple material
-const photonGeom = new THREE.SphereGeometry(42, 64, 32);
-const photonMat = new THREE.MeshBasicMaterial({ color: 0xffaa00, side: THREE.FrontSide, transparent: true, opacity: 0.4 });
-const photonSphere = new THREE.Mesh(photonGeom, photonMat);
-photonSphere.renderOrder = 11;
-galaxyGroup.add(photonSphere);
-
-// subtle ambient and rim lights to tint the scene
-const amb = new THREE.AmbientLight(0x222233, 0.6);
-scene.add(amb);
-
-// Animation loop
-const clock = new THREE.Clock();
-function animate(){
-  const dt = clock.getDelta();
-  const t = clock.getElapsedTime();
-  // smooth lerp multipliers toward targets
-  speedMultiplier = THREE.MathUtils.lerp(speedMultiplier, speedTarget, 0.08);
-  const currentBloom = THREE.MathUtils.lerp(bloom.strength, bloomTarget, 0.08);
-
-  particleUniforms.uTime.value = t * speedMultiplier;
-  // global slow spin of points so spiral arms remain intact
-  points.rotation.z += 0.0005;
-  // spin the whole galaxy slowly
-  galaxyGroup.rotation.y += 0.06 * speedMultiplier * dt;
-  // accretion disk spin
-  if(typeof accretion !== 'undefined') accretion.rotation.y += 1.5 * speedMultiplier * dt;
-  // slight precession of galaxy stars for natural motion
-  points.rotation.z = Math.sin(t*0.05) * 0.001;
-  // update starDust drift toward camera at ~0.2 speed
-  const dustPos = dustGeom.getAttribute('position');
-  for(let i=0;i<DUST_COUNT;i++){
-    let z = dustPos.array[i*3+2];
-    z += dustVel[i] * dt * 80.0; // dustVel ~0.05, scaled for visible slow drift
-    // if dust passes beyond camera, wrap it behind
-    if(z > camera.position.z + 400){
-      z = camera.position.z - 800 + Math.random()*200;
-      dustPos.array[i*3+0] = camera.position.x + (Math.random()-0.5)*800;
-      dustPos.array[i*3+1] = camera.position.y + (Math.random()-0.5)*800;
-    }
-    dustPos.array[i*3+2] = z;
-  }
-  dustPos.needsUpdate = true;
-  controls.update();
-  
-  // apply bloom strength smoothed
-  bloom.strength = currentBloom;
-  composer.render();
-  requestAnimationFrame(animate);
-}
-animate();
-
-// resize
-window.addEventListener('resize', ()=>{
-  camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
-  const _size = renderer.getSize(new THREE.Vector2());
-  renderer.setSize(_size.x, _size.y);
-  composer.setSize(_size.x, _size.y);
-  if(bloom && typeof bloom.setSize === 'function') bloom.setSize(_size.x, _size.y);
-});
-
-// keybindings
-window.addEventListener('keydown', (e)=>{
-  if(e.key === 'r' || e.key === 'R'){
-    camera.position.set(0,200,600); controls.target.set(0,0,0); controls.update();
-  }
-  // Spacebar down: enter hyperspace
-  if(e.code === 'Space'){
-    speedTarget = 5.0;
-    bloomTarget = 3.0;
-  }
-});
-
-window.addEventListener('keyup', (e)=>{
-  if(e.code === 'Space'){
-    speedTarget = 1.0;
-    bloomTarget = baseBloomStrength;
-  }
-});
-
-// small helper: center the view
-controls.target.set(0,0,0);
-
-</script>
-</body>
+            <div class="project">
+              <div class="project-media">
+                <img src="https://i.imgur.com/Vmu4fmS.png" alt="Discord bot screenshot">
+              </div>
+              <div class="project-body">
+                <h3 class="project-title">Discord League Bot (Python)</h3>
+                <p class="project-desc">Discord bot showcasing a league bot that does signings.</p>
+              </div>
+            </div>
+          </div>
+          <p></p>
+          <p></p>
+          <p class="desc"><span class="muted">Contacts: "winsiscool." on discord (be sure to add the period.)</span></p>
+        </div>
+      </div>
+    </main>
+  </body>
 </html>
